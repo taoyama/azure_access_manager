@@ -990,18 +990,18 @@ def get_nsg_from_nic(nic_id: str, vm_name: str, location: str) -> list:
                 print_warn(f"No NSG found on subnet '{subnet_name}'. Auto-creating...")
                 timestamp = int(time.time())
                 new_nsg_name = f"nsg-{subnet_name}-subnet-{timestamp}"
-                new_nsg = create_nsg(new_nsg_name, resource_group, location)
+                new_nsg = create_nsg(new_nsg_name, parts[rg_idx], location)
                 new_nsg_id = new_nsg.get("id", "")
                 if not new_nsg_id:
                     fetched_nsg = run_az_command([
                         "network", "nsg", "show",
-                        "--resource-group", resource_group,
+                        "--resource-group", parts[rg_idx],
                         "--name", new_nsg_name,
                     ])
                     new_nsg_id = fetched_nsg.get("id", "")
                 if new_nsg_id:
                     attach_nsg_to_subnet(subnet_id, new_nsg_id)
-                    if not any(n["id"] == new_nsg_id for nsg in nsgs):
+                    if not any(n["id"] == new_nsg_id for n in nsgs):
                         nsgs.append({"id": new_nsg_id, "source": "Subnet (auto-created)", "subnet_name": subnet_name})
                 else:
                     print_error("Failed to retrieve NSG ID after creation.")
