@@ -986,6 +986,7 @@ def get_nsg_from_nic(nic_id: str, vm_name: str, location: str) -> list:
                 if not any(n["id"] == subnet_nsg["id"] for n in nsgs):
                     nsgs.append({"id": subnet_nsg["id"], "source": "Subnet", "subnet_name": parts[subnet_idx]})
             else:
+                subnet_name = parts[subnet_idx]
                 print_warn(f"No NSG found on subnet '{subnet_name}'. Auto-creating...")
                 timestamp = int(time.time())
                 new_nsg_name = f"nsg-{subnet_name}-subnet-{timestamp}"
